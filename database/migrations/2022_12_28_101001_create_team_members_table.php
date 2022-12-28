@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('team_members', function (Blueprint $table) {
             $table->id();
             $table->foreignId('created_by');
-            $table->string('name');
+            $table->foreignId('team_id');
+            $table->foreignId('user_id');
             $table->string('code')->unique();
-            $table->longText('description')->nullable();
-            $table->string('status')->default('pending');
+            $table->boolean('is_active')->default(true);
+            $table->string('status')->default('on work');
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('team_members');
     }
 };

@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('teams', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('created_by');
+            $table->foreignId('project_id')->constrained();
+            $table->foreignId('team_leader_id');
+            $table->foreignId('team_leader_assistance_id');
+            $table->string('code')->unique();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->boolean('is_admin')->default(false);
-            $table->string('password');
-            $table->rememberToken();
-            $table->foreignId('current_team_id')->nullable();
-            $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('teams');
     }
 };

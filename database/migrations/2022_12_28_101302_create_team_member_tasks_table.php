@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('team_member_tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('created_by');
-            $table->foreignId('project_id')->constrained();
-            $table->unsignedInteger('priority'); //position
+            $table->foreignId('team_member_id');
+            $table->foreignId('task_id');
             $table->boolean('is_important')->default(false);
-            $table->string('name');
+            $table->string('status')->default('on work');
+            $table->timestamp('reminder_at')->nullable();
             $table->longText('note')->nullable();
             $table->date('due_date')->nullable();
+            $table->timestamp('added_to_my_day_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('team_member_tasks');
     }
 };
