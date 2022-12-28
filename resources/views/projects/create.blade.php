@@ -9,9 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <div class="container">
-                <div class="card">
-                    <div class="card-header border-blue text-primary">
-                        Add A New Project
+                <div class="card border-primary">
+                    <div class="card-header border-blue text-primary text-uppercase">
+                        <i class='cil-plus icon-4x'></i> Add A New Project
 
                     </div>
                     <div class="card-body">
@@ -25,7 +25,7 @@
                                 <div class="invalid-feedback">{{$errors->first('project_name')}}</div>
                                 @endif
                             </div>
-                            <button type="submit" class="btn btn-outline-primary btn-sm float-right">Save</button>
+                            <button type="submit" class="btn btn-outline-primary btn-sm float-right"><i class='cil-save icon-4x'></i> Save</button>
                         </form>
                     </div>
                 </div>

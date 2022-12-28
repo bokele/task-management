@@ -12,7 +12,7 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        'created_by', 'code', 'name'
+        'created_by', 'code', 'name', 'description', 'status'
     ];
 
     /**

@@ -9,9 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <div class="container">
-                <div class="card">
-                    <div class="card-header border-blue text-primary">
-                        Edit Task
+                <div class="card border-warning">
+                    <div class="card-header  text-primary">
+                        <i class='cil-pencil icon-4x'></i> Edit Task
 
                     </div>
                     <div class="card-body">
@@ -39,7 +39,7 @@
                                 @endif
                             </div>
 
-                            <button type="submit" class="btn btn-outline-primary btn-sm float-right">Save</button>
+                            <button type="submit" class="btn btn-outline-primary btn-sm float-right"><i class='cil-save icon-4x'></i> Save Change</button>
                         </form>
                     </div>
                 </div>

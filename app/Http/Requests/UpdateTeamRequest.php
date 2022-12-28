@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProjectRequest extends FormRequest
+class UpdateTeamRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,9 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'project_name' => ['required'],
-            'project_status' => ['required']
+            'team_name' => ['required'],
+            'team_leader' => ['required'],
+            'team_leader_assistance' => ['required'],
         ];
     }
 }

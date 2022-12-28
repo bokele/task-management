@@ -3,10 +3,11 @@
 namespace App\Http\Livewire\Task;
 
 use App\Models\Task;
+use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
+use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
 final class TaskTable extends PowerGridComponent
@@ -88,11 +89,9 @@ final class TaskTable extends PowerGridComponent
     public function addColumns(): PowerGridEloquent
     {
         return PowerGrid::eloquent()
-            ->addColumn('created_by', function (Task $model) {
-                return strtolower(e($model->createdBy->name));
-            })
+
             ->addColumn('project_id', function (Task $model) {
-                return strtolower(e($model->project->name));
+                return Str::title($model->project->name);
             })
             ->addColumn('priority', function (Task $model) {
                 $possition = '';
@@ -114,8 +113,10 @@ final class TaskTable extends PowerGridComponent
 
 
 
-            ->addColumn('name')
-            ->addColumn('created_at_formatted', fn (Task $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'))
+            ->addColumn('name', function (Task $model) {
+                return Str::title($model->name);
+            })
+            // ->addColumn('created_at_formatted', fn (Task $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'))
             ->addColumn('updated_at_formatted', fn (Task $model) => Carbon::parse($model->updated_at)->format('d/m/Y H:i:s'));
     }
 
@@ -138,7 +139,7 @@ final class TaskTable extends PowerGridComponent
         return [
 
 
-            Column::make('CREATED BY', 'created_by'),
+
 
             Column::make('PROJECT', 'project_id'),
 
@@ -155,10 +156,10 @@ final class TaskTable extends PowerGridComponent
 
 
 
-            Column::make('CREATED AT', 'created_at_formatted', 'created_at')
-                ->searchable()
-                ->sortable()
-                ->makeInputDatePicker(),
+            // Column::make('CREATED AT', 'created_at_formatted', 'created_at')
+            //     ->searchable()
+            //     ->sortable()
+            //     ->makeInputDatePicker(),
 
             Column::make('UPDATED AT', 'updated_at_formatted', 'updated_at')
                 ->searchable()
@@ -186,13 +187,17 @@ final class TaskTable extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::make('edit', 'Edit')
-                ->class('btn btn-outline-primary btn-sm float-right mb-2')
+            Button::make('edit', "<i class='cil-pencil icon-2x' title='Edit Task'></i>")
+                ->class('btn btn-outline-warning btn-sm float-right m-1')
                 ->route('tasks.edit', ['task' => 'id'])
                 ->target('_self'),
+            Button::make('show', "<i class='cil-folder-open icon-2x' title='Task Details'></i>")
+                ->class('btn btn-outline-primary btn-sm float-right m-1')
+                ->route('tasks.show', ['task' => 'id'])
+                ->target('_self'),
 
-            Button::make('destroy', 'Delete')
-                ->class('btn btn-outline-primary btn-sm float-right')
+            Button::make('destroy', "<i class='cil-trash icon-2x' title='Delete Task'></i>")
+                ->class('btn btn-outline-danger btn-sm float-right m-1')
                 ->route('tasks.destroy', ['task' => 'id'])
                 ->method('delete')
         ];

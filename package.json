@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "@coreui/coreui": "^4.2.4",
+        "@coreui/icons": "^2.1.0",
         "@popperjs/core": "^2.11.6"
     }
 }

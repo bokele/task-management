@@ -36,13 +36,14 @@
 
         <!-- Page Content -->
         <main>
-            @if (session('status') == true)
+            @if (session('status'))
             <div class="container">
-                <div class="alert alert-success mb-4" role="alert">
+                <div class="alert alert-{{session('status')}} mt-4 text-center" role="alert">
                     {{session('message')}}
                 </div>
             </div>
             @endif
+
             {{ $slot }}
         </main>
     </div>

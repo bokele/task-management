@@ -87,6 +87,8 @@ class ProjectController extends Controller
     {
         $project->created_by = auth()->id();
         $project->name = $request->project_name;
+        $project->status = $request->project_status;
+
         $project->update();
 
         return redirect()->route('projects.index')->with(['message' => 'Project has been updated', 'status' => true]);

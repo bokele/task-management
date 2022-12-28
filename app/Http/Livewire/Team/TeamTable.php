@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Livewire\Project;
+namespace App\Http\Livewire\Team;
 
-use App\Models\Project;
+use App\Models\Team;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,7 +10,7 @@ use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
-final class ProjectTable extends PowerGridComponent
+final class TeamTable extends PowerGridComponent
 {
     use ActionButton;
 
@@ -47,11 +47,11 @@ final class ProjectTable extends PowerGridComponent
     /**
      * PowerGrid datasource.
      *
-     * @return Builder<\App\Models\Project>
+     * @return Builder<\App\Models\Team>
      */
     public function datasource(): Builder
     {
-        return Project::query()->with(['createdBy'])->orderBy('id', 'desc');
+        return Team::query()->with(['createdBy', 'project', 'teamLeader', 'teamLeaderAssistance']);
     }
 
     /*
@@ -69,9 +69,7 @@ final class ProjectTable extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [
-            'createdBy'
-        ];
+        return ['createdBy', 'project', 'teamLeader', 'teamLeaderAssistance'];
     }
 
     /*
@@ -89,34 +87,22 @@ final class ProjectTable extends PowerGridComponent
     {
         return PowerGrid::eloquent()
 
-            ->addColumn('status', function (Project $model) {
-
-                if ($model->status == 'pending') {
-                    $status = '<span class="badge bg-warning">' . strtoupper(e($model->status)) . '</span>';
-                } elseif ($model->status == 'completed') {
-                    $status = '<span class="badge bg-success">' . strtoupper(e($model->status)) . '</span>';
-                } elseif ($model->status == 'in progress') {
-                    $status = '<span class="badge bg-primary">' . strtoupper(e($model->status)) . '</span>'; //IN PROGRESS
-                } elseif ($model->status == 'incomplete') {
-                    $status = '<span class="badge bg-danger">' . strtoupper(e($model->status)) . '</span>'; //INCOMPLETE
-                } elseif ($model->status == 'review') {
-                    $status = '<span class="badge bg-dark"><i class="cib-blind "></i>' . strtoupper(e($model->status)) . '</span>'; //REVIEW
-                } elseif ($model->status == 'repossessed') {
-                    $status = '<span class="badge bg-secondary">' . strtoupper(e($model->status)) . '</span>'; //REPOSSESSED
-                }
-                return $status;
+            ->addColumn('project_id', function (Team $model) {
+                return Str::title($model->project->name);
+            })
+            ->addColumn('team_leader_id', function (Team $model) {
+                return Str::title($model->teamLeader->name);
+            })
+            ->addColumn('team_leader_assistance_id', function (Team $model) {
+                return Str::title($model->teamLeaderAssistance->name);
             })
             ->addColumn('code')
 
-            /** Example of custom column using a closure **/
-            ->addColumn('code_lower', function (Project $model) {
-                return strtolower(e($model->code));
-            })
 
-            ->addColumn('name', function (Project $model) {
+            ->addColumn('name', function (Team $model) {
                 return Str::title($model->name);
             })
-            ->addColumn('updated_at_formatted', fn (Project $model) => Carbon::parse($model->updated_at)->format('d/m/Y H:i:s'));
+            ->addColumn('updated_at_formatted', fn (Team $model) => Carbon::parse($model->updated_at)->format('d/m/Y H:i:s'));
     }
 
     /*
@@ -137,11 +123,6 @@ final class ProjectTable extends PowerGridComponent
     {
         return [
 
-
-            Column::make('STATUS', 'status')
-                ->sortable()
-                ->makeInputText(),
-
             Column::make('CODE', 'code')
                 ->sortable()
                 ->searchable()
@@ -151,6 +132,15 @@ final class ProjectTable extends PowerGridComponent
                 ->sortable()
                 ->searchable()
                 ->makeInputText(),
+            Column::make('PROJECT', 'project_id')
+                ->makeInputRange(),
+
+            Column::make('TEAM LEADER', 'team_leader_id'),
+
+            Column::make('TEAM LEADER ASSISTANCE ', 'team_leader_assistance_id'),
+
+
+
 
 
             Column::make('UPDATED AT', 'updated_at_formatted', 'updated_at')
@@ -170,7 +160,7 @@ final class ProjectTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Project Action Buttons.
+     * PowerGrid Team Action Buttons.
      *
      * @return array<int, Button>
      */
@@ -179,18 +169,18 @@ final class ProjectTable extends PowerGridComponent
     public function actions(): array
     {
         return [
-            Button::make('edit', "<i class='cil-pencil icon-2x' title='Edit Project'></i>")
+            Button::make('edit', "<i class='cil-pencil icon-2x' title='Edit Team'></i>")
                 ->class('btn btn-outline-warning btn-sm float-right m-1')
-                ->route('projects.edit', ['project' => 'id'])
+                ->route('teams.edit', ['team' => 'id'])
                 ->target('_self'),
-            Button::make('show', "<i class='cil-folder-open icon-2x'></i>")
+            Button::make('show', "<i class='cil-folder-open icon-2x' title='Team Details'></i>")
                 ->class('btn btn-outline-primary btn-sm float-right m-1')
-                ->route('projects.show', ['project' => 'id'])
+                ->route('teams.show', ['team' => 'id'])
                 ->target('_self'),
 
-            Button::make('destroy', "<i class='cil-trash icon-2x'></i>")
+            Button::make('destroy', "<i class='cil-trash icon-2x' title='Delete Team'></i>")
                 ->class('btn btn-outline-danger btn-sm float-right m-1')
-                ->route('projects.destroy', ['project' => 'id'])
+                ->route('teams.destroy', ['team' => 'id'])
                 ->method('delete')
         ];
     }
@@ -205,7 +195,7 @@ final class ProjectTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Project Action Rules.
+     * PowerGrid Team Action Rules.
      *
      * @return array<int, RuleActions>
      */
@@ -217,7 +207,7 @@ final class ProjectTable extends PowerGridComponent
 
            //Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($project) => $project->id === 1)
+                ->when(fn($team) => $team->id === 1)
                 ->hide(),
         ];
     }
